@@ -23,6 +23,6 @@ class WongApiServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->commands('Jwwb681232\WongApi\Console\WongApiCommand');
     }
 }
