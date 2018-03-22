@@ -1,0 +1,11 @@
+<?php
+namespace App\Models;
+
+use Jwwb681232\WongApi\Models\WongApi;
+
+class $stub_model extends WongApi
+{
+    protected $table = '';
+    protected $primaryKey = '';
+    public    $timestamps = false;
+}

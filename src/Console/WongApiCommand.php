@@ -5,6 +5,7 @@ namespace Jwwb681232\WongApi\Console;
 use Config;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
 class WongApiCommand extends Command
 {
@@ -24,47 +25,78 @@ class WongApiCommand extends Command
     {
         parent::__construct();
 
-        $this->files    = $filesystem;
+        $this->files = $filesystem;
     }
 
     public function handle()
     {
-        $model = $this->argument('repository');
-        //$this->writeRepositoryAndInterface($model);
+        //1、获取参数
+        $model = $this->argument('model');
+
+        //2、创建文件夹
+        $this->createDir();
+
+        //3、获取stub模板文件
+        $stub = $this->getStub();
+
+        //4、获取替换的变量
+        $stubData = $this->getStubData($model);
+
+        //4、替换模板文件内容
+        $newFile = $this->replaceStub($stub, $stubData);
+
+        //5、进行模板渲染
+        return $this->files->put(
+            app_path().DIRECTORY_SEPARATOR.'Models'.DIRECTORY_SEPARATOR.$model.'.php',
+            $newFile
+        );
     }
 
-    /*private function writeRepositoryAndInterface($model)
+
+    private function createDir()
     {
-        if($this->createRepository($model)){
-            $this->info('Success to make a '.ucfirst($model).' Repository and a '.ucfirst($model).'Interface Interface');
+        $dir = [
+            'model' => app_path().DIRECTORY_SEPARATOR.'Models',
+            'provider' => app_path().DIRECTORY_SEPARATOR.'AuthProvider',
+        ];
+
+        foreach ($dir as $key => $value) {
+            if ( ! $this->files->isDirectory($value)) {
+                $this->files->makeDirectory($value, 0755, true);
+            }
         }
+        return true;
     }
 
-    private function createRepository($model)
+    private function getStub()
     {
-        $this->setModel($model);
-        $this->createDirectory();
-    }
-
-    private function createDirectory()
-    {
-        $directory = $this->getDirectory();
-        if(! $this->files->isDirectory($directory)){
-            return $this->files->makeDirectory($directory, 0755, true);
+        try {
+            $stub = [
+                'model'=>$this->files->get(app()->basePath('vendor\jwwb681232\wongapi\src\Stubs\model.stub')),
+                'provider'=>$this->files->get(app()->basePath('vendor\jwwb681232\wongapi\src\Stubs\provider.stub'))
+            ];
+        } catch (FileNotFoundException $e) {
+            return $e->getMessage();
         }
+
+        return $stub;
+
     }
 
-    private function getDirectory()
+    private function getStubData($model)
     {
-        return Config::get('wong.model_path');
+        return ['model' => $model];
     }
 
-
-    public function setModel($model)
+    private function replaceStub($stub, $stubData)
     {
-        $this->model = $model;
-    }*/
+        $newFile = '';
+        foreach ($stubData as $search => $replace) {
+            $newFile = str_replace('$'.$search, $replace, $stub);
+        }
 
+        return $newFile;
+    }
 }
 
 
