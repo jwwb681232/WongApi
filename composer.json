@@ -13,7 +13,7 @@
             "email": "wx497657341@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "rc",
     "autoload": {
         "psr-4": {
             "Jwwb681232\\WongApi\\": "src/"
