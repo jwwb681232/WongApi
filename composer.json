@@ -1,0 +1,22 @@
+{
+    "name": "jwwb681232/wongapi",
+    "description": "this is a laravel api package",
+    "type": "library",
+    "require": {
+        "dingo/api": "2.0.0-alpha1",
+        "tymon/jwt-auth": "1.0.0-rc2"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "wangxiao",
+            "email": "wx497657341@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Jwwb681232\\WongApi\\": "src/"
+        }
+    }
+}
