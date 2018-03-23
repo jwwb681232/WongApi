@@ -3,6 +3,7 @@
 namespace Jwwb681232\WongApi;
 
 use Illuminate\Support\ServiceProvider;
+use Jwwb681232\WongApi\Console\WongApiCommand;
 
 class WongApiServiceProvider extends ServiceProvider
 {
@@ -13,7 +14,7 @@ class WongApiServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->commands('Jwwb681232\WongApi\Console\WongApiCommand');
+        $this->commands([WongApiCommand::class]);
     }
 
     /**
