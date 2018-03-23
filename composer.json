@@ -19,5 +19,12 @@
         "psr-4": {
             "Jwwb681232\\WongApi\\": "src/"
         }
-    }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Jwwb681232\\WongApi\\WongApiServiceProvider"
+            ]
+        }
+    },
 }
