@@ -1,26 +1,26 @@
 <?php
 
-namespace App\Provider;
+namespace App\AuthProvider;
 
-use App\Models\$stub_model;
+use App\Models\$stub_provider;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Contracts\Auth\Authenticatable as UserContract;
 
-class EloquentMerchantUserProvider extends EloquentUserProvider
+class Eloquent$stub_providerProvider extends EloquentUserProvider
 {
     /**
-     * 根据主键获取用户实例
+     * Get a user instance based on the primary key
      * @param mixed $identifier
      *
      * @return mixed
      */
     public function retrieveById($identifier)
     {
-        return $stub_model::find($identifier);
+        return $stub_provider::find($identifier);
     }
 
     /**
-     * 根据给定条件获取用户实例
+     * Get a user instance based on a given condition
      * @param array $credentials
      *
      * @return mixed
@@ -36,7 +36,7 @@ class EloquentMerchantUserProvider extends EloquentUserProvider
     }
 
     /**
-     * 对获取的用户实例与给定条件进行对比
+     * Compare the obtained user instance with the given conditions
      * @param UserContract $user
      * @param array        $credentials
      *

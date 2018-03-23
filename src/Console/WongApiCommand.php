@@ -9,6 +9,7 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
 class WongApiCommand extends Command
 {
+    private   $bar;
     protected $model;
     protected $files;
 
@@ -30,34 +31,32 @@ class WongApiCommand extends Command
 
     public function handle()
     {
-        //1、获取参数
+        $this->setBar();
+
         $model = $this->argument('model');
 
-        //2、创建文件夹
         $this->createDir();
 
-        //3、获取stub模板文件
         $stub = $this->getStub();
 
-        //4、获取替换的变量
         $stubData = $this->getStubData($model);
 
-        //4、替换模板文件内容
-        $newFile = $this->replaceStub($stub, $stubData);
+        $this->replaceStub($stub, $stubData);
 
-        //5、进行模板渲染
-        return $this->files->put(
-            app_path().DIRECTORY_SEPARATOR.'Models'.DIRECTORY_SEPARATOR.$model.'.php',
-            $newFile
-        );
+        $this->bar->finish();
+
+    }
+
+    private function setBar(){
+        $this->bar = $this->output->createProgressBar(2);
     }
 
 
     private function createDir()
     {
         $dir = [
-            'model' => app_path().DIRECTORY_SEPARATOR.'Models',
-            'provider' => app_path().DIRECTORY_SEPARATOR.'AuthProvider',
+            'stub_model' => app_path().DIRECTORY_SEPARATOR.'Models',
+            'stub_provider' => app_path().DIRECTORY_SEPARATOR.'AuthProvider',
         ];
 
         foreach ($dir as $key => $value) {
@@ -72,8 +71,8 @@ class WongApiCommand extends Command
     {
         try {
             $stub = [
-                'model'=>$this->files->get(app()->basePath('vendor\jwwb681232\wongapi\src\Stubs\model.stub')),
-                'provider'=>$this->files->get(app()->basePath('vendor\jwwb681232\wongapi\src\Stubs\provider.stub'))
+                'stub_model'=>$this->files->get(app()->basePath('vendor\jwwb681232\wongapi\src\Stubs\model.stub')),
+                'stub_provider'=>$this->files->get(app()->basePath('vendor\jwwb681232\wongapi\src\Stubs\provider.stub'))
             ];
         } catch (FileNotFoundException $e) {
             return $e->getMessage();
@@ -85,17 +84,23 @@ class WongApiCommand extends Command
 
     private function getStubData($model)
     {
-        return ['model' => $model];
+        return ['stub_model' => $model,'stub_provider'=>$model];
     }
 
     private function replaceStub($stub, $stubData)
     {
-        $newFile = '';
         foreach ($stubData as $search => $replace) {
-            $newFile = str_replace('$'.$search, $replace, $stub);
+            $newFile = str_replace('$'.$search, $replace, $stub[$search]);
+            if ($search == 'stub_model'){
+                $this->files->put(app_path().DIRECTORY_SEPARATOR.'Models'.DIRECTORY_SEPARATOR.$replace.'.php', $newFile);
+            }
+            if ($search == 'stub_provider'){
+                $this->files->put(app_path().DIRECTORY_SEPARATOR.'AuthProvider'.DIRECTORY_SEPARATOR.'Eloquent'.$replace.'Provider.php', $newFile);
+            }
+            $this->bar->advance();
         }
 
-        return $newFile;
+        return true;
     }
 }
 
